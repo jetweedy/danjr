@@ -1,0 +1,12 @@
+[Unit]
+Description=DanJR Django Backend
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory={{ app_dir }}
+ExecStart={{ app_dir }}/venv/bin/python {{ app_dir }}/manage.py runserver 0.0.0.0:8000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

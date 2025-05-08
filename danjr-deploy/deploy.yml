@@ -1,0 +1,165 @@
+---
+- name: Deploy DANJR Backend
+  hosts: danjr
+  become: yes
+
+  vars:
+    app_dir: /home/ubuntu/danjr
+    repo_url: https://github.com/jetweedy/danjr-backend.git  # <-- update this!
+
+
+  pre_tasks:
+    - name: Build React frontend locally
+      delegate_to: localhost
+      become: false
+      shell: |
+        cd ../danjr-frontend
+        npm install
+        npm run build
+      register: react_build
+      retries: 2
+      delay: 5
+      until: react_build.rc == 0
+
+    - name: Copy React build into deploy folder
+      delegate_to: localhost
+      become: false
+      shell: |
+        rm -rf react/build
+        cp -r ../danjr-frontend/build react/
+
+
+  tasks:
+    - name: Update apt and install required packages
+      apt:
+        name:
+          - git
+          - python3-pip
+          - python3-venv
+        update_cache: yes
+
+    - name: Preserve existing database before clone
+      command: mv {{ app_dir }}/db.sqlite3 /tmp/db.sqlite3
+      ignore_errors: yes
+
+    - name: Clone the DANJR repo
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_dir }}"
+        version: main
+        force: yes
+
+    - name: Restore database after clone
+      command: mv /tmp/db.sqlite3 {{ app_dir }}/db.sqlite3
+      ignore_errors: yes
+
+    - name: Set up Python virtual environment
+      args:
+        chdir: "{{ app_dir }}"
+        creates: "venv"
+      command: python3 -m venv venv
+
+    - name: Run Django migrations
+      command: "{{ app_dir }}/venv/bin/python {{ app_dir }}/manage.py migrate"
+      args:
+        chdir: "{{ app_dir }}"
+
+    - name: Install Python dependencies
+      pip:
+        requirements: "{{ app_dir }}/requirements.txt"
+        virtualenv: "{{ app_dir }}/venv"
+
+    - name: Run Django migrations
+      command: "{{ app_dir }}/venv/bin/python manage.py migrate"
+      args:
+        chdir: "{{ app_dir }}"
+
+    - name: Check if db.sqlite3 exists
+      stat:
+        path: "{{ app_dir }}/db.sqlite3"
+      register: dbfile
+
+    - name: Ensure correct permissions on db.sqlite3
+      file:
+        path: "{{ app_dir }}/db.sqlite3"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0664'
+      when: dbfile.stat.exists
+
+    - name: Ensure correct permissions on project directory
+      file:
+        path: "{{ app_dir }}"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Upload .env file
+      copy:
+        src: .env
+        dest: "{{ app_dir }}/.env"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0600'
+
+    - name: Copy systemd service file
+      template:
+        src: danjr-backend.service.j2
+        dest: /etc/systemd/system/danjr-backend.service
+      notify: Restart danjr backend
+
+    - name: Enable danjr backend service
+      systemd:
+        name: danjr-backend
+        enabled: yes
+        state: started
+
+    - name: Upload React NGINX config
+      template:
+        src: templates/react.nginx.j2
+        dest: /etc/nginx/sites-available/react
+      notify: Reload nginx
+
+    - name: Ensure /var/www/react exists
+      file:
+        path: /var/www/react
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Copy React build to /var/www/react
+      copy:
+        src: react/build/
+        dest: /var/www/react/
+        owner: www-data
+        group: www-data
+        mode: '0644'
+      notify: Reload nginx
+
+    - name: Enable NGINX site for React
+      file:
+        src: /etc/nginx/sites-available/react
+        dest: /etc/nginx/sites-enabled/react
+        state: link
+      notify: Reload nginx
+
+    - name: Generate HTTPS cert for React site
+      command: >
+        certbot --nginx -n --redirect --agree-tos
+        --email jetweedy@gmail.com
+        -d danjrstack.com -d www.danjrstack.com
+      notify: Reload nginx
+
+
+
+  handlers:
+    - name: Restart danjr backend
+      systemd:
+        name: danjr-backend
+        state: restarted
+
+    - name: Reload nginx
+      systemd:
+        name: nginx
+        state: reloaded
