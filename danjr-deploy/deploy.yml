@@ -4,8 +4,9 @@
   become: yes
 
   vars:
-    app_dir: /home/ubuntu/danjr
-    repo_url: https://github.com/jetweedy/danjr-backend.git  # <-- update this!
+    repo_url: https://github.com/jetweedy/danjr.git
+    repo_root: /home/ubuntu/danjr
+    app_dir: /home/ubuntu/danjr/danjr-backend
 
 
   pre_tasks:
@@ -45,7 +46,7 @@
     - name: Clone the DANJR repo
       git:
         repo: "{{ repo_url }}"
-        dest: "{{ app_dir }}"
+        dest: "{{ repo_root  }}"
         version: main
         force: yes
 
@@ -59,20 +60,16 @@
         creates: "venv"
       command: python3 -m venv venv
 
-    - name: Run Django migrations
-      command: "{{ app_dir }}/venv/bin/python {{ app_dir }}/manage.py migrate"
-      args:
-        chdir: "{{ app_dir }}"
-
     - name: Install Python dependencies
       pip:
         requirements: "{{ app_dir }}/requirements.txt"
         virtualenv: "{{ app_dir }}/venv"
 
     - name: Run Django migrations
-      command: "{{ app_dir }}/venv/bin/python manage.py migrate"
+      command: "{{ app_dir }}/venv/bin/python {{ app_dir }}/manage.py migrate"
       args:
         chdir: "{{ app_dir }}"
+
 
     - name: Check if db.sqlite3 exists
       stat:
