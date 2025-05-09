@@ -40,7 +40,7 @@ pipeline {
             steps {
                 dir('danjr-deploy') {
                     sh 'echo "🚀 About to run Ansible playbook..."'
-                    sh 'ansible-playbook deploy.yml || (echo "❌ Ansible failed!" && exit 1)'
+                    sh 'ansible-playbook -i inventory.ini deploy.yml || (echo "❌ Ansible failed!" && exit 1)'
                 }
             }
         }
