@@ -136,10 +136,6 @@
         group: www-data
         mode: '0755'
 
-    - name: DEBUG: list local build files
-      delegate_to: localhost
-      command: ls -l ../danjr-frontend/build/
-
     - name: Copy React build to /var/www/react
       copy:
         src: ../danjr-frontend/build/
