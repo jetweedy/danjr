@@ -7,7 +7,7 @@
     repo_url: https://github.com/jetweedy/danjr.git
     repo_root: /home/ubuntu/danjr
     app_dir: /home/ubuntu/danjr/danjr-backend
-
+    backend_dir: /mnt/c/Users/jtweedy/Desktop/Programming/repos/danjr/danjr-backend
 
   #pre_tasks:
   #  - name: Build React frontend locally
@@ -92,6 +92,17 @@
         owner: ubuntu
         group: ubuntu
         mode: '0600'
+
+
+    - name: Upload .env file
+      copy:
+        src: "{{ backend_dir }}/.env"
+        dest: "{{ app_dir }}/.env"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0600'
+      delegate_to: localhost
+
 
     - name: Copy systemd service file
       template:
