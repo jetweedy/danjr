@@ -40,7 +40,7 @@ function App() {
     }
   };
 
-  const loadTasks = async () => {
+ const loadTasks = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/tasks/`, { headers });
       const data = await res.json();
@@ -48,7 +48,7 @@ function App() {
     } catch {
       setError('Could not load tasks.');
     }
-  };
+  });
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -105,7 +105,7 @@ function App() {
 
   return (
     <div style={{ padding: '1rem', fontFamily: 'Arial, sans-serif' }}>
-      <h1>My Tasks</h1>
+      <h1>Some Tasks</h1>
 
       {!loggedIn ? (
         <form onSubmit={handleLogin}>
