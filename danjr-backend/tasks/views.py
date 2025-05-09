@@ -22,7 +22,7 @@ class TaskDetail(APIView):
     def put(self, request, task_id):
         try:
             task = Task.objects.get(id=task_id)
-            task.title = "__"+request.data.get('title', task.title)
+            task.title = request.data.get('title', task.title)
             task.description = request.data.get('description', task.description)
             task.completed = request.data.get('completed', task.completed)
             task.save()
