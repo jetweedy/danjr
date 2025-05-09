@@ -9,18 +9,18 @@
     app_dir: /home/ubuntu/danjr/danjr-backend
     backend_dir: /mnt/c/Users/jtweedy/Desktop/Programming/repos/danjr/danjr-backend
 
-  #pre_tasks:
-  #  - name: Build React frontend locally
-  #    delegate_to: localhost
-  #    become: false
-  #    shell: |
-  #      cd ../danjr-frontend
-  #      npm install
-  #      npm run build
-  #    register: react_build
-  #    retries: 2
-  #    delay: 5
-  #    until: react_build.rc == 0
+  pre_tasks:
+    - name: Build React frontend locally
+      delegate_to: localhost
+      become: false
+      shell: |
+        cd ../danjr-frontend
+        npm install
+        npm run build
+      register: react_build
+      retries: 2
+      delay: 5
+      until: react_build.rc == 0
 
 
   tasks:
