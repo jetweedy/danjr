@@ -101,11 +101,11 @@ function App() {
 
   useEffect(() => {
     if (loggedIn) loadTasks();
-  }, [loggedIn]);
+  }, [loggedIn, loadTasks]);
 
   return (
     <div style={{ padding: '1rem', fontFamily: 'Arial, sans-serif' }}>
-      <h1>Here are my Tasks</h1>
+      <h1>My Tasks</h1>
 
       {!loggedIn ? (
         <form onSubmit={handleLogin}>
