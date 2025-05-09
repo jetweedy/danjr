@@ -118,6 +118,19 @@
         group: www-data
         mode: '0755'
 
+    - name: Remove old React build files
+      file:
+        path: /var/www/react/
+        state: absent
+
+    - name: Re-create React build directory
+      file:
+        path: /var/www/react/
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
     - name: Copy React build to /var/www/react
       copy:
         src: ../danjr-frontend/build/
