@@ -44,6 +44,7 @@ cd danjr
 source venv/bin/activate
 python manage.py migrate
 python manage.py createsuperuser
+sudo apt install node npm
 ```
 
 
@@ -70,5 +71,11 @@ sudo apt install -y jenkins
 sudo service jenkins start
 
 sudo service jenkins status
+
+sudo su - jenkins
+ssh-keygen -t rsa -b 4096 -C "jenkins@localhost" -f ~/.ssh/id_rsa -N ""
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+chmod 644 ~/.ssh/known_hosts
+cat ~/.ssh/id_rsa.pub
 
 ```
