@@ -30,7 +30,7 @@ pipeline {
                     sh 'echo "📦 Checking contents of build folder..."'
                     sh 'ls -la'
                     sh 'grep "<h1>" index.html || echo "No <h1> in index.html"'
-                    sh 'grep "Tasks" ../src/App.js || echo "No 'Tasks' string in source"'
+                    sh """grep "Tasks" ../src/App.js || echo 'No Tasks string in source'"""
                 }
             }
         }
