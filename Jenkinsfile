@@ -39,9 +39,12 @@ pipeline {
         stage('Deploy via Ansible') {
             steps {
                 dir('danjr-deploy') {
-                    sh 'ansible-playbook deploy.yml'
+                    sh 'echo "🚀 About to run Ansible playbook..."'
+                    sh 'ansible-playbook deploy.yml || (echo "❌ Ansible failed!" && exit 1)'
                 }
             }
         }
+
+
     }
 }
