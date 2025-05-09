@@ -85,15 +85,17 @@
         group: ubuntu
         mode: '0755'
 
-    - name: Upload .env from WSL to EC2
+    - name: Upload .env from local to EC2
       copy:
         src: "{{ backend_dir }}/.env"
         dest: "{{ app_dir }}/.env"
         owner: ubuntu
         group: ubuntu
         mode: '0600'
-      delegate_to: localhost
-      become: false   # ✅ disables sudo locally (important!)
+      become: yes
+      vars:
+        ansible_connection: ssh
+
 
 
     - name: Copy systemd service file
