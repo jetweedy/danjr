@@ -13,15 +13,15 @@ pipeline {
         //    }
         //}
 
-        //stage('Build Frontend') {
-        //    steps {
-        //        dir('danjr-frontend') {
-        //            sh 'npm install'
-        //            sh 'CI=false npm run build'
-        //            sh 'ls -la build || echo "❌ Build folder missing!"'
-        //        }
-        //    }
-        //}
+        stage('Build Frontend') {
+            steps {
+                dir('danjr-frontend') {
+                    sh 'npm install'
+                    sh 'CI=false npm run build'
+                    sh 'ls -la build || echo "❌ Build folder missing!"'
+                }
+            }
+        }
 
 
         stage('Verify What Jenkins Will Copy') {
