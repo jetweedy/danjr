@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const API_BASE = process.env.REACT_APP_API_BASE;
 
@@ -48,7 +48,7 @@ function App() {
     } catch {
       setError('Could not load tasks.');
     }
-  });
+  }, []);
 
   const handleAdd = async (e) => {
     e.preventDefault();
