@@ -25,10 +25,6 @@
 
   tasks:
 
-    - name: Echo to prove Ansible is running
-      delegate_to: localhost
-      command: echo "🔥 Ansible is running from Jenkins"
-
     - name: Update apt and install required packages
       apt:
         name:

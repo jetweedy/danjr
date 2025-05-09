@@ -105,7 +105,7 @@ function App() {
 
   return (
     <div style={{ padding: '1rem', fontFamily: 'Arial, sans-serif' }}>
-      <h1>The Tasks</h1>
+      <h1>Tasks</h1>
 
       {!loggedIn ? (
         <form onSubmit={handleLogin}>
