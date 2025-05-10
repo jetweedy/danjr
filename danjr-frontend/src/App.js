@@ -12,11 +12,12 @@ function App() {
   const [error, setError] = useState('');
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('token'));
 
-  const token = localStorage.getItem('token');
-
-  const headers = {
-    'Content-Type': 'application/json',
-    Authorization: `Token ${token}`,
+  const getHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${token}`,
+    };
   };
 
   const handleLogin = async (e) => {
@@ -32,17 +33,18 @@ function App() {
 
       const data = await res.json();
       localStorage.setItem('token', data.token);
-      setLoggedIn(true);
+
+      setTasks([]);        // Clear stale tasks before switching user
+      setLoggedIn(true);   // Triggers useEffect to load fresh data
       setError('');
-      loadTasks();
     } catch {
       setError('Login failed. Check your credentials.');
     }
   };
 
- const loadTasks = useCallback(async () => {
+  const loadTasks = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/tasks/`, { headers });
+      const res = await fetch(`${API_BASE}/tasks/`, { headers: getHeaders() });
       const data = await res.json();
       setTasks(Array.isArray(data) ? data : []);
     } catch {
@@ -56,7 +58,7 @@ function App() {
     try {
       await fetch(`${API_BASE}/tasks/`, {
         method: 'POST',
-        headers,
+        headers: getHeaders(),
         body: JSON.stringify({ title: newTask }),
       });
       setNewTask('');
@@ -70,7 +72,7 @@ function App() {
     try {
       await fetch(`${API_BASE}/tasks/${id}/`, {
         method: 'DELETE',
-        headers,
+        headers: getHeaders(),
       });
       loadTasks();
     } catch {
@@ -82,7 +84,7 @@ function App() {
     try {
       await fetch(`${API_BASE}/tasks/${id}/`, {
         method: 'PUT',
-        headers,
+        headers: getHeaders(),
         body: JSON.stringify({ title: editingText }),
       });
       setEditingId(null);
