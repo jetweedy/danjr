@@ -12,5 +12,7 @@ The backend readme contains some info on setting up a Mongo Atlas DB to connect 
 The deploy readme goes into getting the WSL environment set up (if in Windows) so you can use Ansible and Jenkins more easily, and then details about using Ansible to deploy to AWS EC2.
 The frontend readme is just the stock React-installed readme, and you can pretty much ignore it for testing purposes.
 
-
+**NOTE:** 
+There may be a few path or environment settings in this specific to *my* setup, so you'd need to swap some of those out for your own as you set things up.
+I can't say they're necessarily well-documented, but if you overlook any, errors should point you in the right direction.
 
